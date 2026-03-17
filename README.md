@@ -1,24 +1,32 @@
 # ZEMA
 
-Simple Bubble Tea demo inspired by `hop` patterns from `opensrc`:
+`zema` is a terminal TUI tool written in Go for managing [Zellij](https://zellij.dev/) sessions.
 
-- state-based views (`list`, `help`, `add`)
-- `Init/Update/View` model lifecycle
-- async commands with `tea.Batch`
-- filter input with `bubbles/textinput`
-- styled output with `lipgloss`
+## Features
 
-## Run
+- list Zellij sessions;
+- filter sessions by search input;
+- create a new session;
+- delete the selected session;
+- attach to a session directly from the interface;
+- built-in help screen with keyboard shortcuts.
+
+## Build
+
+Recommended approach (via `Taskfile.yml`):
 
 ```bash
-go run .
+task build
 ```
 
-## Keys
+The binary will be built to `bin/zema`.
 
-- `j/k` or arrows - move
-- `/` - filter
-- `a` - add item
-- `r` - refresh checks
-- `?` - help
-- `q` - quit
+## Controls
+
+- `j/k` or `up/down` - move through the list;
+- `enter` - attach to the selected session;
+- `/` - filter sessions;
+- `c` - create a session;
+- `d` - delete a session;
+- `?` - open help;
+- `q` or `ctrl+c` - quit.
