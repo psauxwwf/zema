@@ -1,6 +1,7 @@
 package view
 
 import (
+	"os/exec"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -19,7 +20,7 @@ type Zellij interface {
 	Ls() ([]string, error)
 	Delete(name string) error
 	Create(name string) error
-	Attach(name string) error
+	Attach(name string) *exec.Cmd
 }
 
 type size struct {

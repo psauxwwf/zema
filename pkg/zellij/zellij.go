@@ -2,6 +2,7 @@ package zellij
 
 import (
 	"fmt"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -59,9 +60,6 @@ func (z *Zellij) Create(name string) error {
 	return nil
 }
 
-func (z *Zellij) Attach(name string) error {
-	if _, err := z.cmd("attach", "--create", name); err != nil {
-		return fmt.Errorf("failed attach to session: %w", err)
-	}
-	return nil
+func (z *Zellij) Attach(name string) *exec.Cmd {
+	return exec.Command(z.binpath, "attach", "--create", name)
 }

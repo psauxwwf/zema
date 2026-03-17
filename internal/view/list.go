@@ -9,6 +9,10 @@ import (
 	"github.com/charmbracelet/huh"
 )
 
+type attachDoneMsg struct {
+	err error
+}
+
 func (m model) viewList() string {
 	var b strings.Builder
 
@@ -48,6 +52,14 @@ func (m model) viewList() string {
 
 func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmds []tea.Cmd
+	if message, ok := msg.(attachDoneMsg); ok {
+		if message.err != nil {
+			m.status = message.err.Error()
+			return m, tea.Batch(cmds...)
+		}
+		return m, tea.Quit
+	}
+
 	if key, ok := msg.(tea.KeyMsg); ok && m.view == viewAdd {
 		switch key.String() {
 		case "enter":
@@ -69,6 +81,68 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 	}
 
+	key, ok := msg.(tea.KeyMsg)
+	if ok {
+		switch key.String() {
+		case "q", "ctrl+c":
+			return m, tea.Quit
+
+		case "?":
+			m.view = viewHelp
+			return m, tea.Batch(cmds...)
+
+		case "c":
+			m.view = viewAdd
+			if m.forms.add.form != nil {
+				cmds = append(cmds, m.forms.add.form.Init())
+			}
+			return m, tea.Batch(cmds...)
+
+		case "enter":
+			if m.forms.session.selected == "" {
+				m.status = "session is not selected"
+				return m, tea.Batch(cmds...)
+			}
+
+			cmd := tea.ExecProcess(
+				m.zellij.Attach(m.forms.session.selected),
+				func(err error) tea.Msg {
+					return attachDoneMsg{err: err}
+				},
+			)
+			cmds = append(cmds, cmd)
+			return m, tea.Batch(cmds...)
+
+		case "d":
+			if err := m.zellij.Delete(m.forms.session.selected); err != nil {
+				m.status = err.Error()
+				return m, tea.Batch(cmds...)
+			}
+
+			sessions, err := m.zellij.Ls()
+			if err != nil {
+				m.status = err.Error()
+				return m, tea.Batch(cmds...)
+			}
+			m.status = "deleted: " + m.forms.session.selected
+			m.forms.session.sessions = sessions
+			m.view = viewList
+
+			m.refreshSelectForm()
+			if m.forms.session.form != nil {
+				cmds = append(cmds, m.forms.session.form.Init())
+			}
+
+			return m, tea.Batch(cmds...)
+
+		case "esc":
+			if m.view == viewAdd {
+				m.view = viewList
+				return m, tea.Batch(cmds...)
+			}
+		}
+	}
+
 	if m.forms.session.form != nil {
 		form, cmd := m.forms.session.form.Update(msg)
 		if f, ok := form.(*huh.Form); ok {
@@ -85,58 +159,6 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 		cmds = append(cmds, cmd)
-	}
-
-	key, ok := msg.(tea.KeyMsg)
-	if !ok {
-		return m, tea.Batch(cmds...)
-	}
-
-	switch key.String() {
-	case "q", "ctrl+c":
-		return m, tea.Quit
-
-	case "?":
-		m.view = viewHelp
-		return m, tea.Batch(cmds...)
-
-	case "c":
-		m.view = viewAdd
-		if m.forms.add.form != nil {
-			cmds = append(cmds, m.forms.add.form.Init())
-		}
-		return m, tea.Batch(cmds...)
-
-	case "enter":
-		return m, tea.Batch(cmds...)
-
-	case "d":
-		if err := m.zellij.Delete(m.forms.session.selected); err != nil {
-			m.status = err.Error()
-			return m, tea.Batch(cmds...)
-		}
-
-		sessions, err := m.zellij.Ls()
-		if err != nil {
-			m.status = err.Error()
-			return m, tea.Batch(cmds...)
-		}
-		m.status = "deleted: " + m.forms.session.selected
-		m.forms.session.sessions = sessions
-		m.view = viewList
-
-		m.refreshSelectForm()
-		if m.forms.session.form != nil {
-			cmds = append(cmds, m.forms.session.form.Init())
-		}
-
-		return m, tea.Batch(cmds...)
-
-	case "esc":
-		if m.view == viewAdd {
-			m.view = viewList
-			return m, tea.Batch(cmds...)
-		}
 	}
 
 	return m, tea.Batch(cmds...)
