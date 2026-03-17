@@ -3,7 +3,6 @@ package view
 import (
 	"strings"
 
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"
 )
@@ -18,40 +17,43 @@ const (
 
 type Zellij interface {
 	Ls() ([]string, error)
+	Delete(name string) error
+	Create(name string) error
+	Attach(name string) error
+}
+
+type size struct {
+	width, height int
+}
+
+type forms struct {
+	session *session
+	add     *add
+}
+
+type session struct {
+	form     *huh.Form
+	selected string
+	sessions []string
+}
+
+type add struct {
+	form  *huh.Form
+	value string
 }
 
 type model struct {
 	zellij Zellij
-
-	width, height int
-
-	view view
-
-	sessions []string
-
-	filter, add textinput.Model
-	selectForm  *huh.Form
-	selectedID  string
-
-	isFilter bool
-	filtered []int
-
-	cursor int
+	view   view
 	status string
+
+	size  *size
+	forms *forms
 }
 
 func New(
 	_zellij Zellij,
 ) (*tea.Program, error) {
-	_filter := textinput.New()
-	_filter.Placeholder = "Search session..."
-	_filter.CharLimit = 64
-	_filter.Width = 30
-
-	_add := textinput.New()
-	_add.Placeholder = "New session"
-	_add.CharLimit = 64
-	_add.Width = 30
 
 	_sessions, err := _zellij.Ls()
 	if err != nil {
@@ -59,19 +61,30 @@ func New(
 	}
 
 	m := model{
-		zellij:   _zellij,
-		filter:   _filter,
-		add:      _add,
-		sessions: _sessions,
+		zellij: _zellij,
+		size:   &size{},
+		forms: &forms{
+			session: &session{
+				sessions: _sessions,
+			},
+			add: &add{},
+		},
 	}
+	m.forms.add.form = huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("New session").
+				Value(&m.forms.add.value),
+		),
+	).WithShowHelp(false).WithShowErrors(false)
 	m.refreshSelectForm()
 
 	return tea.NewProgram(m, tea.WithAltScreen()), nil
 }
 
 func (m model) Init() tea.Cmd {
-	if m.selectForm != nil {
-		return tea.Batch(m.selectForm.Init())
+	if m.forms.session.form != nil {
+		return tea.Batch(m.forms.session.form.Init())
 	}
 	return tea.Batch()
 }
@@ -92,8 +105,8 @@ func join(s ...string) string {
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		m.width = msg.Width
-		m.height = msg.Height
+		m.size.width = msg.Width
+		m.size.height = msg.Height
 		return m, nil
 	}
 
