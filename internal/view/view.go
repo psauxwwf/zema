@@ -28,11 +28,11 @@ type size struct {
 }
 
 type forms struct {
-	session *session
-	add     *add
+	sessions *sessions
+	add      *add
 }
 
-type session struct {
+type sessions struct {
 	form     *huh.Form
 	selected string
 	sessions []string
@@ -55,37 +55,34 @@ type model struct {
 func New(
 	_zellij Zellij,
 ) (*tea.Program, error) {
-
-	_sessions, err := _zellij.Ls()
+	var (
+		_status        string
+		_sessions, err = _zellij.Ls()
+	)
 	if err != nil {
-		return nil, err
+		_status = strings.TrimSpace(err.Error())
 	}
 
 	m := model{
 		zellij: _zellij,
 		size:   &size{},
 		forms: &forms{
-			session: &session{
+			sessions: &sessions{
 				sessions: _sessions,
 			},
 			add: &add{},
 		},
+		status: _status,
 	}
-	m.forms.add.form = huh.NewForm(
-		huh.NewGroup(
-			huh.NewInput().
-				Title("New session").
-				Value(&m.forms.add.value),
-		),
-	).WithShowHelp(false).WithShowErrors(false)
-	m.refreshSelectForm()
+	m.refreshAddForm()
+	m.refreshSessionsForm()
 
 	return tea.NewProgram(m, tea.WithAltScreen()), nil
 }
 
 func (m model) Init() tea.Cmd {
-	if m.forms.session.form != nil {
-		return tea.Batch(m.forms.session.form.Init())
+	if m.forms.sessions.form != nil {
+		return tea.Batch(m.forms.sessions.form.Init())
 	}
 	return tea.Batch()
 }

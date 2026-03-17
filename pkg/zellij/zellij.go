@@ -41,7 +41,7 @@ func (z *Zellij) cmd(args ...string) ([]byte, error) {
 func (z *Zellij) Ls() ([]string, error) {
 	out, err := z.cmd("ls", "--short")
 	if err != nil {
-		return nil, fmt.Errorf("failed to ls sessions: %w", err)
+		return []string{}, fmt.Errorf("failed to ls sessions: %w", err)
 	}
 	return strings.Split(strings.TrimSuffix(string(out), "\n"), "\n"), nil
 }
