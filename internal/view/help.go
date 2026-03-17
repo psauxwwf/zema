@@ -1,18 +1,28 @@
 package view
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/charmbracelet/lipgloss"
+)
+
+const helpKeyColumnWidth = 16
+
+func helpHint(key, action string) string {
+	keyCol := lipgloss.NewStyle().Width(helpKeyColumnWidth).Render(hotkeyStyle.Render(key))
+	return keyCol + helpStyle.Render(action)
+}
 
 func (m model) viewHelp() string {
 	return strings.Join([]string{
-		join(titleStyle.Render("Zema:"), helpStyle.Render("help")),
+		panelStyle.Render(join(titleStyle.Render("Zema 🧌"), subtitleStyle.Render("help"))),
+		helpHint("j/k or up/down", "move select"),
+		helpHint("enter", "attach to session"),
+		helpHint("/", "filter sessions"),
+		helpHint("c", "create session"),
+		helpHint("d", "delete session"),
+		helpHint("q", "quit"),
 		"",
-		helpStyle.Render("j/k or up/down  move select"),
-		helpStyle.Render("enter           attach to session"),
-		helpStyle.Render("/               filter sessions"),
-		helpStyle.Render("c               create session"),
-		helpStyle.Render("d               delete session"),
-		helpStyle.Render("q               quit"),
-		"",
-		helpStyle.Render("Press any key to close help"),
+		waitStyle.Render("Press any key to close help"),
 	}, "\n")
 }

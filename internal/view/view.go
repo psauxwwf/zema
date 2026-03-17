@@ -97,7 +97,7 @@ func (m model) View() string {
 }
 
 func join(s ...string) string {
-	return strings.Join(s, "  ")
+	return strings.Join(s, joinSeparator)
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

@@ -9,13 +9,15 @@ import (
 func (m model) viewList() string {
 	var b strings.Builder
 
-	b.WriteString(
-		join(
-			titleStyle.Render("Zema:"),
-			helpStyle.Render("zellij manager"),
-			"\n\n",
-		),
+	header := join(
+		titleStyle.Render(appTitle),
+		subtitleStyle.Render(sessionsTitle),
 	)
+
+	b.WriteString(
+		panelStyle.Render(header),
+	)
+	b.WriteString("\n")
 
 	if form := m.currForm(); form != nil {
 		b.WriteString(strings.TrimSuffix(form.View(), "\n"))
@@ -23,13 +25,14 @@ func (m model) viewList() string {
 	}
 
 	if m.status != "" {
-		b.WriteString(join(helpStyle.Render(m.status), "\n\n"))
+		b.WriteString(renderStatus(m.status))
+		b.WriteString("\n\n")
 	}
 
 	b.WriteString(
 		join(
-			helpStyle.Render("q quit"),
-			helpStyle.Render("? help"),
+			keyHint(keyQuit, actionQuit),
+			keyHint(keyHelp, actionHelp),
 			"\n\n",
 		),
 	)

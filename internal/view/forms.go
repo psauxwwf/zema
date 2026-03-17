@@ -19,10 +19,10 @@ func (m *model) refreshAddForm() {
 	m.forms.add.form = huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
-				Title("New session").
+				Title(labelNewSession).
 				Value(&m.forms.add.value),
 		),
-	).WithShowHelp(false).WithShowErrors(false)
+	).WithTheme(huh.ThemeDracula()).WithShowHelp(false).WithShowErrors(false)
 }
 
 func (m *model) refreshSessionsForm() {
@@ -36,18 +36,18 @@ func (m *model) refreshSessionsForm() {
 
 	if len(options) == 0 {
 		m.forms.sessions.selected = ""
-		options = append(options, huh.NewOption("No sessions", ""))
+		options = append(options, huh.NewOption(labelNoSessions, ""))
 	}
 
 	m.forms.sessions.form = huh.NewForm(
 		huh.NewGroup(
 			huh.NewSelect[string]().
-				Title("Choose session").
-				Description(fmt.Sprintf("Total: %d", len(m.forms.sessions.sessions))).
+				Title(labelChooseSession).
+				Description(fmt.Sprintf(descTotalFmt, len(m.forms.sessions.sessions))).
 				Options(options...).
 				Value(&m.forms.sessions.selected),
 		),
-	).WithShowHelp(false).WithShowErrors(false)
+	).WithTheme(huh.ThemeDracula()).WithShowHelp(false).WithShowErrors(false)
 }
 
 func (m *model) fixSelect() {

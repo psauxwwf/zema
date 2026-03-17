@@ -45,9 +45,9 @@ func (m model) onDone(done attachDoneMsg) (tea.Model, tea.Cmd) {
 
 func (m model) onAdd(key tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch key.String() {
-	case "enter":
+	case keyEnter:
 		return m.addSession()
-	case "esc":
+	case keyEsc:
 		m.view = viewList
 		return m, nil
 	default:
@@ -70,18 +70,18 @@ func (m model) updateAddForm(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) onKey(key tea.KeyMsg) (tea.Model, tea.Cmd, bool) {
 	switch key.String() {
-	case "q", "ctrl+c":
+	case keyQuit, keyCtrlC:
 		return m, tea.Quit, true
-	case "?":
+	case keyHelp:
 		m.view = viewHelp
 		return m, nil, true
-	case "c":
+	case keyCreate:
 		m.view = viewAdd
 		return m, initForm(m.forms.add.form), true
-	case "enter":
+	case keyEnter:
 		next, cmd := m.attachSession()
 		return next, cmd, true
-	case "d":
+	case keyDelete:
 		next, cmd := m.deleteSession()
 		return next, cmd, true
 	default:
@@ -91,7 +91,7 @@ func (m model) onKey(key tea.KeyMsg) (tea.Model, tea.Cmd, bool) {
 
 func (m model) attachSession() (tea.Model, tea.Cmd) {
 	if m.forms.sessions.selected == "" {
-		m.status = "session is not selected"
+		m.status = statusSessionNotSelected
 		return m, nil
 	}
 
@@ -115,7 +115,7 @@ func (m model) deleteSession() (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
-	m.status = "deleted: " + m.forms.sessions.selected
+	m.status = statusDeletedMessagePrefix + m.forms.sessions.selected + " 🗑️"
 	m.forms.sessions.sessions = sessions
 	m.view = viewList
 	m.refreshSessionsForm()
@@ -150,7 +150,7 @@ func (m model) updateSessionForm(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) addSession() (tea.Model, tea.Cmd) {
 	session := strings.TrimSpace(m.forms.add.value)
 	if session == "" {
-		m.status = "session name is empty"
+		m.status = statusSessionNameEmpty
 		return m, nil
 	}
 
@@ -170,7 +170,7 @@ func (m model) addSession() (tea.Model, tea.Cmd) {
 	m.refreshAddForm()
 	m.view = viewList
 	m.refreshSessionsForm()
-	m.status = "created: " + session
+	m.status = statusCreatedMessagePrefix + session + " ✨"
 
 	return m, initForm(m.forms.sessions.form)
 }
