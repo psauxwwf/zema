@@ -13,10 +13,11 @@ import (
 var (
 	_default = Config{
 		Zellij: Zellij{
-			Bin:    "zellij",
-			Ls:     []string{"ls", "--short"},
-			Delete: []string{"delete-session", "--force", "{session}"},
-			Create: []string{"attach", "--create-background", "{session}"},
+			Bin:       "zellij",
+			Ls:        []string{"ls", "--short"},
+			Delete:    []string{"delete-session", "--force", "{session}"},
+			Create:    []string{"attach", "--create-background", "{session}"},
+			RenameTab: []string{"action", "rename-tab", "{title}"},
 			Attach: Command{
 				Pre: []string{"kitty", "@", "load-config", "{home}/.config/kitty/kitty-no-bind.conf"},
 				Args: []string{
@@ -36,11 +37,12 @@ type Config struct {
 }
 
 type Zellij struct {
-	Bin    string   `yaml:"bin" env-default:"zellij"`
-	Ls     []string `yaml:"ls" env-default:"ls,--short"`
-	Delete []string `yaml:"delete" env-default:"delete-session,--force,{session}"`
-	Create []string `yaml:"create" env-default:"attach,--create-background,{session}"`
-	Attach Command  `yaml:"attach"`
+	Bin       string   `yaml:"bin" env-default:"zellij"`
+	Ls        []string `yaml:"ls" env-default:"ls,--short"`
+	Delete    []string `yaml:"delete" env-default:"delete-session,--force,{session}"`
+	Create    []string `yaml:"create" env-default:"attach,--create-background,{session}"`
+	RenameTab []string `yaml:"rename_tab" env-default:"action,rename-tab,{title}"`
+	Attach    Command  `yaml:"attach"`
 }
 
 type Command struct {
