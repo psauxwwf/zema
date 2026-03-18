@@ -2,6 +2,7 @@ package zema
 
 import (
 	"fmt"
+	"zema/internal/config"
 	"zema/internal/view"
 	"zema/pkg/zellij"
 
@@ -12,8 +13,10 @@ type Zema struct {
 	view *tea.Program
 }
 
-func New() (*Zema, error) {
-	_zellij, err := zellij.New("zellij")
+func New(config *config.Config) (*Zema, error) {
+	_zellij, err := zellij.New(
+		config.Zellij,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("fatal zellij: %w", err)
 	}
