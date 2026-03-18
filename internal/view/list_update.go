@@ -112,7 +112,6 @@ func (m model) deleteSession() (tea.Model, tea.Cmd) {
 	sessions, err := m.zellij.Ls()
 	if err != nil {
 		m.status = strings.TrimSpace(err.Error())
-		return m, nil
 	}
 
 	m.status = statusDeletedMessagePrefix + m.forms.sessions.selected + " 🗑️"

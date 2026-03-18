@@ -36,7 +36,6 @@ func (m *model) refreshSessionsForm() {
 
 	if len(options) == 0 {
 		m.forms.sessions.selected = ""
-		options = append(options, huh.NewOption(labelNoSessions, ""))
 	}
 
 	m.forms.sessions.form = huh.NewForm(
