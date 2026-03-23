@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -56,7 +57,9 @@ func (z *Zellij) Ls() ([]string, error) {
 	if err != nil {
 		return []string{}, fmt.Errorf("failed to ls sessions: %w", err)
 	}
-	return strings.Split(strings.TrimSuffix(string(out), "\n"), "\n"), nil
+	sessions := strings.Split(strings.TrimSuffix(string(out), "\n"), "\n")
+	sort.Strings(sessions)
+	return sessions, nil
 }
 
 func (z *Zellij) Delete(name string) error {
