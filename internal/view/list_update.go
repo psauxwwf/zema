@@ -1,6 +1,7 @@
 package view
 
 import (
+	"fmt"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -40,7 +41,19 @@ func (m model) onDone(done attachDoneMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
-	return m, tea.Quit
+	sessions, err := m.zellij.Ls()
+	if err != nil {
+		m.status = strings.TrimSpace(err.Error())
+		m.view = viewList
+		m.refreshSessionsForm()
+		return m, initForm(m.forms.sessions.form)
+	}
+
+	m.forms.sessions.sessions = sessions
+	m.view = viewList
+	m.refreshSessionsForm()
+
+	return m, initForm(m.forms.sessions.form)
 }
 
 func (m model) onAdd(key tea.KeyMsg) (tea.Model, tea.Cmd) {
@@ -94,6 +107,7 @@ func (m model) attachSession() (tea.Model, tea.Cmd) {
 		m.status = statusSessionNotSelected
 		return m, nil
 	}
+	m.status = fmt.Sprintf("%s %s", statusAttachedPrefix, m.forms.sessions.selected)
 
 	return m, tea.ExecProcess(
 		m.zellij.Attach(m.forms.sessions.selected),
@@ -114,7 +128,7 @@ func (m model) deleteSession() (tea.Model, tea.Cmd) {
 		m.status = strings.TrimSpace(err.Error())
 	}
 
-	m.status = statusDeletedMessagePrefix + m.forms.sessions.selected + " 🗑️"
+	m.status = fmt.Sprintf("%s %s", statusDeletedPrefix, m.forms.sessions.selected)
 	m.forms.sessions.sessions = sessions
 	m.view = viewList
 	m.refreshSessionsForm()
@@ -169,7 +183,7 @@ func (m model) addSession() (tea.Model, tea.Cmd) {
 	m.refreshAddForm()
 	m.view = viewList
 	m.refreshSessionsForm()
-	m.status = statusCreatedMessagePrefix + session + " ✨"
+	m.status = fmt.Sprintf("%s %s", statusCreatedPrefix, session)
 
 	return m, initForm(m.forms.sessions.form)
 }

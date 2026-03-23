@@ -28,7 +28,7 @@ func renderStatus(status string) string {
 
 	s := strings.ToLower(value)
 	switch {
-	case strings.HasPrefix(s, statusCreatedPrefix), strings.HasPrefix(s, statusDeletedPrefix):
+	case strings.HasPrefix(s, statusCreatedPrefix), strings.HasPrefix(s, statusDeletedPrefix), strings.HasPrefix(s, statusAttachedPrefix):
 		return okStyle.Render(value)
 	case strings.Contains(s, "failed"), strings.Contains(s, "fatal"), strings.Contains(s, "empty"), strings.Contains(s, "not selected"):
 		return badStyle.Render(value)

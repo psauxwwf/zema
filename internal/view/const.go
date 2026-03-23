@@ -3,7 +3,7 @@ package view
 const (
 	joinSeparator = "  "
 
-	appTitle      = "Zema 🧌"
+	appTitle      = "🧌 Zema"
 	sessionsTitle = "sessions"
 	helpTitle     = "help"
 
@@ -28,12 +28,9 @@ const (
 	labelChooseSession = "Choose session"
 	descTotalFmt       = "Total: %d"
 
-	statusCreatedPrefix        = "created:"
-	statusDeletedPrefix        = "deleted:"
-	statusCreatedMessagePrefix = statusCreatedPrefix + " "
-	statusDeletedMessagePrefix = statusDeletedPrefix + " "
-	statusSessionNotSelected   = "session is not selected ⚠️"
-	statusSessionNameEmpty     = "session name is empty ⚠️"
-
-	helpCloseHint = "Press any key to close help"
+	statusCreatedPrefix      = "🆕 created:"
+	statusDeletedPrefix      = "❌ deleted:"
+	statusAttachedPrefix     = "🔗 attached:"
+	statusSessionNotSelected = "⚠️ session is not selected"
+	statusSessionNameEmpty   = "⚠️ session name is empty"
 )
