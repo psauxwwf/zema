@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ilyakaznacheev/cleanenv"
 	"gopkg.in/yaml.v2"
 )
 
@@ -37,18 +36,18 @@ type Config struct {
 }
 
 type Zellij struct {
-	Bin       string   `yaml:"bin" env-default:"zellij"`
-	Ls        []string `yaml:"ls" env-default:"ls,--short"`
-	Delete    []string `yaml:"delete" env-default:"delete-session,--force,{session}"`
-	Create    []string `yaml:"create" env-default:"attach,--create-background,{session}"`
-	RenameTab []string `yaml:"rename_tab" env-default:"action,rename-tab,{title}"`
+	Bin       string   `yaml:"bin"`
+	Ls        []string `yaml:"ls"`
+	Delete    []string `yaml:"delete"`
+	Create    []string `yaml:"create"`
+	RenameTab []string `yaml:"rename_tab"`
 	Attach    Command  `yaml:"attach"`
 }
 
 type Command struct {
-	Pre  []string `yaml:"pre" env-default:"kitty,@,load-config,{home}/.config/kitty/kitty-no-bind.conf"`
-	Args []string `yaml:"args" env-default:"attach,--create,{session}"`
-	Post []string `yaml:"post" env-default:"kitty,@,load-config,{home}/.config/kitty/kitty.conf"`
+	Pre  []string `yaml:"pre"`
+	Args []string `yaml:"args"`
+	Post []string `yaml:"post"`
 }
 
 func Default(filename string) error {
@@ -60,7 +59,7 @@ func Default(filename string) error {
 
 func New(filename string) (*Config, error) {
 	var (
-		config Config
+		config = _default
 	)
 	if _, err := os.Stat(filename); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -68,7 +67,11 @@ func New(filename string) (*Config, error) {
 		}
 		return nil, fmt.Errorf("failed to find file: %w", err)
 	}
-	if err := cleanenv.ReadConfig(filename, &config); err != nil {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read config: %w", err)
+	}
+	if err := yaml.Unmarshal(data, &config); err != nil {
 		return nil, fmt.Errorf("failed to load config: %w", err)
 	}
 	return &config, nil

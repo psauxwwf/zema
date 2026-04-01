@@ -133,23 +133,25 @@ func (z *Zellij) Attach(name string) *exec.Cmd {
 }
 
 func renderArgs(args []string, value string, home string, placeholder string) []string {
-	var (
-		prepared       = make([]string, len(args))
-		hasPlaceholder = false
-	)
+	if len(args) == 0 {
+		return nil
+	}
 
-	for i, arg := range args {
+	prepared := make([]string, 0, len(args))
+	hasPlaceholder := false
+
+	for _, arg := range args {
 		if arg == placeholder {
-			prepared[i] = value
 			hasPlaceholder = true
-			continue
 		}
+
 		rendered := strings.ReplaceAll(arg, placeholder, value)
 		rendered = strings.ReplaceAll(rendered, "{home}", home)
 		if strings.HasPrefix(rendered, "~/") && home != "" {
 			rendered = strings.Replace(rendered, "~", home, 1)
 		}
-		prepared[i] = rendered
+
+		prepared = append(prepared, rendered)
 	}
 
 	if hasPlaceholder {

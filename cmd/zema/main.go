@@ -11,8 +11,6 @@ import (
 	"zema/internal/zema"
 )
 
-type code int
-
 var (
 	path        = flag.String("config", "~/.config/zema/config.yaml", "path to config")
 	save        = flag.Bool("save", false, "save default config to path -config")
