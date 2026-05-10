@@ -88,12 +88,16 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) View() string {
+	var content string
+
 	switch m.view {
 	case viewHelp:
-		return m.viewHelp()
+		content = m.viewHelp()
 	default:
-		return m.viewList()
+		content = m.viewList()
 	}
+
+	return appStyle.Render(content)
 }
 
 func join(s ...string) string {

@@ -9,16 +9,6 @@ import (
 func (m model) viewList() string {
 	var b strings.Builder
 
-	header := join(
-		titleStyle.Render(appTitle),
-		subtitleStyle.Render(sessionsTitle),
-	)
-
-	b.WriteString(
-		panelStyle.Render(header),
-	)
-	b.WriteString("\n")
-
 	if form := m.currForm(); form != nil {
 		b.WriteString(strings.TrimSuffix(form.View(), "\n"))
 		b.WriteString("\n\n")
