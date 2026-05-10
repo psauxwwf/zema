@@ -3,10 +3,6 @@ package view
 const (
 	joinSeparator = "  "
 
-	appTitle      = "🧌 Zema"
-	sessionsTitle = "sessions"
-	helpTitle     = "help"
-
 	keyQuit   = "q"
 	keyCtrlC  = "ctrl+c"
 	keyHelp   = "?"
@@ -28,9 +24,9 @@ const (
 	labelChooseSession = "Choose session"
 	descTotalFmt       = "Total: %d"
 
-	statusCreatedPrefix      = "🆕 created:"
-	statusDeletedPrefix      = "❌ deleted:"
-	statusAttachedPrefix     = "🔗 attached:"
-	statusSessionNotSelected = "⚠️ session is not selected"
-	statusSessionNameEmpty   = "⚠️ session name is empty"
+	statusCreatedPrefix      = "created:"
+	statusDeletedPrefix      = "deleted:"
+	statusAttachedPrefix     = "attached:"
+	statusSessionNotSelected = "session is not selected"
+	statusSessionNameEmpty   = "session name is empty"
 )

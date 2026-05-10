@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	appStyle      = lipgloss.NewStyle().MarginTop(1).MarginLeft(1).MarginBottom(1).MarginRight(1)
 	titleStyle    = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#BD93F9"))
 	subtitleStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#8BE9FD"))
 	helpStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("#6272A4"))
