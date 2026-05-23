@@ -15,11 +15,21 @@ var (
 	badStyle      = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#FF5555"))
 	waitStyle     = lipgloss.NewStyle().Foreground(lipgloss.Color("#FFB86C"))
 	hotkeyStyle   = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#F1FA8C"))
-	panelStyle    = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#44475A")).
-			Padding(0, 1)
 )
+
+const titleASCII = ` ███████╗ ███████╗ ███╗   ███╗  █████╗
+ ╚══███╔╝ ██╔════╝ ████╗ ████║ ██╔══██╗
+   ███╔╝  █████╗   ██╔████╔██║ ███████║
+  ███╔╝   ██╔══╝   ██║╚██╔╝██║ ██╔══██║
+ ███████╗ ███████╗ ██║ ╚═╝ ██║ ██║  ██║
+ ╚══════╝ ╚══════╝ ╚═╝     ╚═╝ ╚═╝  ╚═╝`
+
+func renderHeader() string {
+	return lipgloss.JoinVertical(
+		lipgloss.Left,
+		titleStyle.Render(titleASCII),
+	)
+}
 
 func renderStatus(status string) string {
 	value := strings.TrimSpace(status)

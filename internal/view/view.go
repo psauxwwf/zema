@@ -97,7 +97,7 @@ func (m model) View() string {
 		content = m.viewList()
 	}
 
-	return appStyle.Render(content)
+	return appStyle.Render(strings.Join([]string{renderHeader(), content}, "\n\n"))
 }
 
 func join(s ...string) string {
