@@ -87,8 +87,8 @@ func (z *Zellij) RenameTab(title string) error {
 	}
 
 	runes := []rune(title)
-	if len(runes) > 32 {
-		title = string(runes[:32])
+	if len(runes) > 16 {
+		title = string(runes[:16])
 	}
 
 	if _, err := z.cmd(renderArgs(z.renameTab, title, "", "{title}")...); err != nil {

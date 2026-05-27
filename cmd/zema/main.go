@@ -167,5 +167,6 @@ func _zema_tab_preexec() { zema --tab-title-cmd "$1" &>/dev/null }
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _zema_tab_precmd
 add-zsh-hook preexec _zema_tab_preexec
+add-zsh-hook chpwd _zema_tab_precmd
 `
 }
