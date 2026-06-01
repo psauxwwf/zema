@@ -38,15 +38,11 @@ func (m model) updateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) onDone(done attachDoneMsg) (tea.Model, tea.Cmd) {
 	if done.err != nil {
 		m.status = strings.TrimSpace(done.err.Error())
-		return m, nil
 	}
 
 	sessions, err := m.zellij.Ls()
 	if err != nil {
 		m.status = strings.TrimSpace(err.Error())
-		m.view = viewList
-		m.refreshSessionsForm()
-		return m, initForm(m.forms.sessions.form)
 	}
 
 	m.forms.sessions.sessions = sessions
