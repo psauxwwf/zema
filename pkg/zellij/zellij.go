@@ -1,10 +1,12 @@
 package zellij
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -12,6 +14,8 @@ import (
 	"zema/internal/config"
 	"zema/pkg/cmd"
 )
+
+var ErrNoSessions = errors.New("no active zellij sessions found")
 
 type Zellij struct {
 	binpath   string
@@ -55,6 +59,9 @@ func (z *Zellij) cmd(args ...string) ([]byte, error) {
 func (z *Zellij) Ls() ([]string, error) {
 	out, err := z.cmd(z.ls...)
 	if err != nil {
+		if strings.Contains(string(out), "No active zellij sessions found") {
+			return []string{}, fmt.Errorf("failed to ls sessions: %w", ErrNoSessions)
+		}
 		return []string{}, fmt.Errorf("failed to ls sessions: %w", err)
 	}
 	sessions := strings.Split(strings.TrimSuffix(string(out), "\n"), "\n")
@@ -64,6 +71,13 @@ func (z *Zellij) Ls() ([]string, error) {
 
 func (z *Zellij) Delete(name string) error {
 	if _, err := z.cmd(renderArgs(z.delete, name, "", "{session}")...); err != nil {
+		exists, _err := z.sessionExists(name)
+		if _err == nil && !exists {
+			return nil
+		}
+		if _err != nil {
+			return fmt.Errorf("failed to delete: %w", errors.Join(err, _err))
+		}
 		return fmt.Errorf("failed to delete: %w", err)
 	}
 	return nil
@@ -171,4 +185,20 @@ func shellJoin(args []string) string {
 
 func shellQuote(value string) string {
 	return "'" + strings.ReplaceAll(value, "'", "'\"'\"'") + "'"
+}
+
+func (z *Zellij) sessionExists(name string) (bool, error) {
+	sessions, err := z.Ls()
+	if err != nil {
+		if errors.Is(err, ErrNoSessions) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	if slices.Contains(sessions, name) {
+		return true, nil
+	}
+
+	return false, nil
 }

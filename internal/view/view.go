@@ -1,8 +1,11 @@
 package view
 
 import (
+	"errors"
 	"os/exec"
 	"strings"
+
+	"zema/pkg/zellij"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"
@@ -59,7 +62,7 @@ func New(
 		_status        string
 		_sessions, err = _zellij.Ls()
 	)
-	if err != nil {
+	if err != nil && !errors.Is(err, zellij.ErrNoSessions) {
 		_status = strings.TrimSpace(err.Error())
 	}
 

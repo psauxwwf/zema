@@ -114,6 +114,9 @@ func (m model) attachSession() (tea.Model, tea.Cmd) {
 }
 
 func (m model) deleteSession() (tea.Model, tea.Cmd) {
+	if m.forms.sessions.selected == "" {
+		return m, nil
+	}
 	if err := m.zellij.Delete(m.forms.sessions.selected); err != nil {
 		m.status = strings.TrimSpace(err.Error())
 		return m, nil
