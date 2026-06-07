@@ -162,11 +162,13 @@ func toAbs(path string) string {
 }
 
 func zshCompletionScript() string {
-	return `func _zema_tab_precmd() { zema --tab-title-pwd "$PWD" &>/dev/null }
-func _zema_tab_preexec() { zema --tab-title-cmd "$1" &>/dev/null }
+	return `func _zema_tab_precmd() { zema --tab-title-pwd "$PWD" &! }
+func _zema_tab_preexec() { zema --tab-title-cmd "$1" &! }
+func _zema_tab_bootstrap() { sleep 1; _zema_tab_precmd }
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _zema_tab_precmd
 add-zsh-hook preexec _zema_tab_preexec
 add-zsh-hook chpwd _zema_tab_precmd
+_zema_tab_bootstrap &!
 `
 }

@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -105,6 +106,10 @@ func (z *Zellij) RenameTab(title string) error {
 		title = string(runes[:16])
 	}
 
+	if num, err := z.currentTabPosition(); err == nil {
+		title = fmt.Sprintf("%d: %s", num+1, title)
+	}
+
 	if _, err := z.cmd(renderArgs(z.renameTab, title, "", "{title}")...); err != nil {
 		return fmt.Errorf("failed to rename tab: %w", err)
 	}
@@ -185,6 +190,35 @@ func shellJoin(args []string) string {
 
 func shellQuote(value string) string {
 	return "'" + strings.ReplaceAll(value, "'", "'\"'\"'") + "'"
+}
+
+func (z *Zellij) currentTabPosition() (int, error) {
+	out, err := z.cmd("action", "current-tab-info")
+	if err != nil {
+		return 0, nil
+	}
+
+	for line := range strings.SplitSeq(string(out), "\n") {
+		line = strings.TrimSpace(line)
+		position, ok := strings.CutPrefix(line, "position:")
+		if !ok {
+			continue
+		}
+
+		position = strings.TrimSpace(position)
+		if position == "" {
+			continue
+		}
+
+		num, err := strconv.Atoi(position)
+		if err != nil {
+			return 0, err
+		}
+
+		return num, nil
+	}
+
+	return 0, nil
 }
 
 func (z *Zellij) sessionExists(name string) (bool, error) {
