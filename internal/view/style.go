@@ -1,6 +1,7 @@
 package view
 
 import (
+	"os"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
@@ -50,4 +51,24 @@ func renderStatus(status string) string {
 
 func keyHint(key, action string) string {
 	return hotkeyStyle.Render(key) + " " + helpStyle.Render(action)
+}
+
+func renderPrompt(s string) string {
+	return subtitleStyle.Render(s)
+}
+
+func getUserHost() string {
+	user := os.Getenv("USER")
+	if user == "" {
+		if u, err := os.UserHomeDir(); err == nil {
+			if idx := strings.LastIndex(u, "/"); idx != -1 {
+				user = u[idx+1:]
+			}
+		}
+	}
+	host, _ := os.Hostname()
+	if host == "" {
+		host = "localhost"
+	}
+	return user + "@" + host
 }

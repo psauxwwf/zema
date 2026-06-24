@@ -47,9 +47,10 @@ type add struct {
 }
 
 type model struct {
-	zellij Zellij
-	view   view
-	status string
+	zellij   Zellij
+	view     view
+	status   string
+	userHost string
 
 	size  *size
 	forms *forms
@@ -66,9 +67,11 @@ func New(
 		_status = strings.TrimSpace(err.Error())
 	}
 
+	userHost := getUserHost()
 	m := model{
-		zellij: _zellij,
-		size:   &size{},
+		zellij:   _zellij,
+		size:     &size{},
+		userHost: userHost,
 		forms: &forms{
 			sessions: &sessions{
 				sessions: _sessions,

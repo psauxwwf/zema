@@ -23,6 +23,7 @@ func (m model) viewList() string {
 		join(
 			keyHint(keyQuit, actionQuit),
 			keyHint(keyHelp, actionHelp),
+			renderPrompt(m.userHost),
 			"\n\n",
 		),
 	)
