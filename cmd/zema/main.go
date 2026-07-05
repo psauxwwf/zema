@@ -75,7 +75,10 @@ func rootCmd() *cobra.Command {
 		Short:         "Terminal UI for managing Zellij sessions",
 		SilenceUsage:  true,
 		SilenceErrors: true,
-		Args:          cobra.MaximumNArgs(1),
+		CompletionOptions: cobra.CompletionOptions{
+			DisableDefaultCmd: true,
+		},
+		Args: cobra.MaximumNArgs(1),
 		RunE: func(_ *cobra.Command, args []string) error {
 			path = toAbs(path)
 
@@ -126,6 +129,7 @@ func rootCmd() *cobra.Command {
 			return nil
 		},
 	}
+	root.SetHelpCommand(&cobra.Command{Hidden: true})
 
 	root.Flags().StringVar(&path, "config", "~/.config/zema/config.yaml", "path to config")
 	root.Flags().BoolVar(&save, "save", false, "save default config to path --config")
